@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private TextView RSSIText;
     private BluetoothAdapter BTAdapter;
@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setTitle("Attendance Seeker");
 
         RSSIText = findViewById(R.id.textView);
         BTAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -49,8 +49,10 @@ public class MainActivity extends AppCompatActivity {
         this.registerReceiver(Receiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
 
         Button button = findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener(){
+
+        button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+
                 RSSIText.setText("");
                 if (BTAdapter.isDiscovering()) {
                     BTAdapter.cancelDiscovery();
@@ -60,5 +62,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void OnClickRegisterNewStudent(View view) {
+        Intent i = new Intent("cis470.attendanceseeker.RegisterStudent");
+        startActivity(i);
+    }
+
+    public void OnClickAllStudents(View view) {
+        Intent i = new Intent("cis470.attendanceseeker.ViewStudents");
+        startActivity(i);
+    }
+
+    protected int getLayoutResource() {
+        return R.layout.activity_main;
     }
 }

@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">AttendanceSeeker</string>
+    <string name="btn_register_student">Register New Student</string>
+    <string name="student_id">Student Id</string>
+    <string name="hint_student_id">7 digit CSU id</string>
+    <string name="student_name">Student Name</string>
+    <string name="hint_student_name">Student\'s full name</string>
+    <string name="mac_address">MAC Address</string>
+    <string name="hint_mac_address">Mac address of student\'s phone</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_take_attendance">Take Attendance</string>
+    <string name="btn_all_students">All Students</string>
 </resources>
