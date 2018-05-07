@@ -21,9 +21,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegisterStudentActivity">
+        <activity android:name=".ClassActivity">
             <intent-filter>
-                <action android:name="cis470.attendanceseeker.RegisterStudent"/>
+                <action android:name="cis470.attendanceseeker.Class"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".StudentDetailActivity">
+            <intent-filter>
+                <action android:name="cis470.attendanceseeker.StudentDetail"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>

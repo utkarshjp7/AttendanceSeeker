@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class RegisterStudentActivity extends BaseActivity {
+public class StudentDetailActivity extends BaseActivity {
 
     EditText mStudentIdEditText;
     EditText mStudentNameEditText;
@@ -16,22 +16,34 @@ public class RegisterStudentActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle("Register new student");
+        setTitle("Student Detail");
 
-        mStudentIdEditText = findViewById(R.id.studentId);
-        mStudentNameEditText = findViewById(R.id.studentName);
-        mMacAddressEditText = findViewById(R.id.macAddress);
+        mStudentIdEditText = findViewById(R.id.editTextStudentId);
+        mStudentNameEditText = findViewById(R.id.ediTextStudentName);
+        mMacAddressEditText = findViewById(R.id.editTextMacAddress);
+
+        String studentId = (String) getIntent().getSerializableExtra("studentId");
+
+        if(studentId != null) {
+            db.open();
+            StudentDevice studentDevice = db.getRecord(studentId);
+            if(studentDevice != null) {
+                mStudentIdEditText.setText(studentDevice.getStudentId());
+                mStudentNameEditText.setText(studentDevice.getStudentName());
+                mMacAddressEditText.setText(studentDevice.getMacAddress());
+            }
+        }
     }
 
     protected int getLayoutResource() {
-        return R.layout.register_student;
+        return R.layout.student_detail;
     }
 
-    protected void OnClickCancel(View view) {
+    public void OnClickCancel(View view) {
         finish();
     }
 
-    protected void OnClickSave(View view) {
+    public void OnClickSave(View view) {
         String studentId = mStudentIdEditText.getText().toString();
         String studentName = mStudentNameEditText.getText().toString();
         String macAddress = mMacAddressEditText.getText().toString();
@@ -52,8 +64,14 @@ public class RegisterStudentActivity extends BaseActivity {
         }
 
         StudentDevice studentDevice = new StudentDevice(studentId, studentName, macAddress);
-        db.open();
-        db.insertStudentDevice(studentDevice);
-        db.close();
+        try {
+            db.open();
+            db.insertStudentDevice(studentDevice);
+            db.close();
+            Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
+            finish();
+        } catch (Exception e) {
+            Toast.makeText(this, "Unknown Error", Toast.LENGTH_SHORT).show();
+        }
     }
 }
