@@ -28,6 +28,7 @@ public class ViewStudentsActivity extends BaseActivity {
             public void onItemClick (AdapterView < ? > adapter, View view,int position, long arg){
                 TextView textViewStudentId = view.findViewById(R.id.student_id);
                 Intent intent = new Intent("cis470.attendanceseeker.StudentDetail");
+                intent.putExtra("className", mClassName);
                 intent.putExtra("studentId", textViewStudentId.getText());
                 startActivity(intent);
             }
@@ -43,8 +44,7 @@ public class ViewStudentsActivity extends BaseActivity {
 
     private void listAllStudents() {
         db.open();
-        Cursor cursor = db.getAllRecords();
-        startManagingCursor(cursor);
+        Cursor cursor = db.getStudentsByClass(mClassName);
 
         String[] from = new String[] { DBAdapter.COL_STUDENT_ID, DBAdapter.COL_STUDENT_NAME };
         int[] to = new int[]{ R.id.student_id, R.id.student_name };

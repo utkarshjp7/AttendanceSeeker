@@ -5,8 +5,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import cis470.attendanceseeker.entities.Student;
+
 public class StudentDetailActivity extends BaseActivity {
 
+    String mClassName;
     EditText mStudentIdEditText;
     EditText mStudentNameEditText;
     EditText mMacAddressEditText;
@@ -16,22 +19,28 @@ public class StudentDetailActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle("Student Detail");
+        mClassName = (String) getIntent().getSerializableExtra("className");
+        setTitle(mClassName + " cis470.attendanceseeker.entities.Student Detail");
 
         mStudentIdEditText = findViewById(R.id.editTextStudentId);
         mStudentNameEditText = findViewById(R.id.ediTextStudentName);
         mMacAddressEditText = findViewById(R.id.editTextMacAddress);
 
         String studentId = (String) getIntent().getSerializableExtra("studentId");
+        String macAddress = (String) getIntent().getSerializableExtra("macAddress");
 
         if(studentId != null) {
             db.open();
-            StudentDevice studentDevice = db.getRecord(studentId);
-            if(studentDevice != null) {
-                mStudentIdEditText.setText(studentDevice.getStudentId());
-                mStudentNameEditText.setText(studentDevice.getStudentName());
-                mMacAddressEditText.setText(studentDevice.getMacAddress());
+            Student student = db.getStudentById(studentId);
+            if(student != null) {
+                mStudentIdEditText.setText(student.getStudentId());
+                mStudentNameEditText.setText(student.getStudentName());
+                mMacAddressEditText.setText(student.getMacAddress());
             }
+        }
+
+        if(macAddress != null) {
+            mMacAddressEditText.setText(macAddress);
         }
     }
 
@@ -49,12 +58,12 @@ public class StudentDetailActivity extends BaseActivity {
         String macAddress = mMacAddressEditText.getText().toString();
 
         if(studentId.isEmpty()) {
-            Toast.makeText(this, "Student id is empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "cis470.attendanceseeker.entities.Student id is empty", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if(studentName.isEmpty()) {
-            Toast.makeText(this, "Student name is empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "cis470.attendanceseeker.entities.Student name is empty", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -63,10 +72,10 @@ public class StudentDetailActivity extends BaseActivity {
             return;
         }
 
-        StudentDevice studentDevice = new StudentDevice(studentId, studentName, macAddress);
+        Student student = new Student(studentId, studentName, macAddress, mClassName);
         try {
             db.open();
-            db.insertStudentDevice(studentDevice);
+            db.insertStudentDevice(student);
             db.close();
             Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
             finish();

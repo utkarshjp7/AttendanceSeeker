@@ -1,19 +1,17 @@
-package cis470.attendanceseeker;
+package cis470.attendanceseeker.entities;
 
-/**
- * Created by uko on 5/2/18.
- */
-
-public class StudentDevice {
+public class Student {
 
     private String mStudentId;
     private String mStudentName;
     private String mMacAddress;
+    private String mClassName;
 
-    public StudentDevice(String studentId, String studentName, String macAddress) {
+    public Student(String studentId, String studentName, String macAddress, String className) {
         this.mStudentId = studentId;
         this.mStudentName = studentName;
         this.mMacAddress = macAddress;
+        this.mClassName = className;
     }
 
     public String getStudentId() {
@@ -28,6 +26,8 @@ public class StudentDevice {
         return this.mMacAddress;
     }
 
+    public String getClassName() { return this.mClassName; }
+
     public void setStudentId(String studentId) {
         this.mStudentId = studentId;
     }
@@ -39,4 +39,6 @@ public class StudentDevice {
     public void setMacAddress(String macAddress) {
         this.mMacAddress = macAddress;
     }
+
+    public void setClassName(String className) { this.mClassName = className; }
 }

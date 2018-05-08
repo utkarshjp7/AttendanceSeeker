@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import cis470.attendanceseeker.entities.Student;
+
 public class DBAdapter {
 
     public static final String COL_ID = "_id";
@@ -18,14 +20,11 @@ public class DBAdapter {
     private static final String TAG = "DBAdapter";
     private static final String DATABASE_NAME = "AttendanceSeeker";
     private static final String TABLE_DEVICE = "devices";
-    private static final String TABLE_CLASS = "classes";
     private static final int DATABASE_VERSION = 1;
     private static final String CREATE_TABLE_DEVICES = String.format(
-            "CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT NOT NULL, %s TEXT NOT NULL, %s TEXT NOT NULL);",
-            TABLE_DEVICE, COL_ID, COL_STUDENT_ID, COL_STUDENT_NAME, COL_MAC_ADDRESS);
-    private static final String CREATE_TABLE_CLASSES = String.format(
-            "CREATE TABLE %s (%s INTEGER PRIMARY KET AUTOINCREMENT, %s TEXT UNIQUE NOT NULL);",
-            TABLE_CLASS, COL_ID, COL_CLASS_NAME);
+            "CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT NOT NULL, %s TEXT NOT NULL, %s TEXT NOT NULL, %s TEXT NOT NULL);",
+            TABLE_DEVICE, COL_ID, COL_STUDENT_ID, COL_STUDENT_NAME, COL_MAC_ADDRESS, COL_CLASS_NAME);
+
 
     private DatabaseHelper DBHelper;
     private SQLiteDatabase db;
@@ -47,7 +46,6 @@ public class DBAdapter {
         {
             try {
                 db.execSQL(CREATE_TABLE_DEVICES);
-                db.execSQL(CREATE_TABLE_CLASSES);
             }
             catch (SQLException e)
             {
@@ -76,12 +74,13 @@ public class DBAdapter {
         DBHelper.close();
     }
 
-    public long insertStudentDevice(StudentDevice studentDevice)
+    public long insertStudentDevice(Student student)
     {
         ContentValues values = new ContentValues();
-        values.put(COL_STUDENT_ID, studentDevice.getStudentId());
-        values.put(COL_STUDENT_NAME, studentDevice.getStudentName());
-        values.put(COL_MAC_ADDRESS, studentDevice.getMacAddress());
+        values.put(COL_STUDENT_ID, student.getStudentId());
+        values.put(COL_STUDENT_NAME, student.getStudentName());
+        values.put(COL_MAC_ADDRESS, student.getMacAddress());
+        values.put(COL_CLASS_NAME, student.getClassName());
         return db.insert(TABLE_DEVICE, null, values);
     }
 
@@ -90,27 +89,49 @@ public class DBAdapter {
         return db.delete(TABLE_DEVICE, COL_STUDENT_ID + "=" + studentId, null) > 0;
     }
 
-    public Cursor getAllRecords()
+    public Cursor getStudentsByClass(String className)
     {
         return db.query(TABLE_DEVICE, new String[] { COL_ID, COL_STUDENT_ID, COL_STUDENT_NAME },
-                null, null, null, null, null);
+                COL_CLASS_NAME + "='" + className + "'", null, null, null, null);
     }
 
-    public StudentDevice getRecord(String studentId) {
-        Cursor cursor = db.query(TABLE_DEVICE, new String[] { COL_ID, COL_STUDENT_ID, COL_STUDENT_NAME, COL_MAC_ADDRESS },
+
+    public Student getStudentById(String studentId) {
+        Cursor cursor = db.query(TABLE_DEVICE, null,
                 COL_STUDENT_ID + "=" + studentId, null, null, null, null, null);
 
-        StudentDevice studentDevice = null;
+        Student student = null;
         if(cursor.moveToFirst()) {
             int idxStudentName = cursor.getColumnIndex(DBAdapter.COL_STUDENT_NAME);
             int idxMacAddress = cursor.getColumnIndex(DBAdapter.COL_MAC_ADDRESS);
+            int idxClassName = cursor.getColumnIndex(DBAdapter.COL_CLASS_NAME);
             String studentName = cursor.getString(idxStudentName);
             String macAddress = cursor.getString(idxMacAddress);
-            studentDevice = new StudentDevice(studentId, studentName, macAddress);
+            String className = cursor.getString(idxClassName);
+            student = new Student(studentId, studentName, macAddress, className);
         }
 
         cursor.close();
-        return studentDevice;
+        return student;
+    }
+
+    public Student getStudentByMacAddress(String macAddress) {
+        Cursor cursor = db.query(TABLE_DEVICE, null,
+                COL_MAC_ADDRESS + "='" + macAddress + "'", null, null, null, null, null);
+
+        Student student = null;
+        if(cursor.moveToFirst()) {
+            int idxStudentName = cursor.getColumnIndex(DBAdapter.COL_STUDENT_NAME);
+            int idxStudentId = cursor.getColumnIndex(DBAdapter.COL_STUDENT_ID);
+            int idxClassName = cursor.getColumnIndex(DBAdapter.COL_CLASS_NAME);
+            String studentName = cursor.getString(idxStudentName);
+            String studentId = cursor.getString(idxStudentId);
+            String className = cursor.getString(idxClassName);
+            student = new Student(studentId, studentName, macAddress, className);
+        }
+
+        cursor.close();
+        return student;
     }
 
     public Cursor getMacAddress(String studentId) throws SQLException
@@ -121,11 +142,11 @@ public class DBAdapter {
         return mCursor;
     }
 
-    public boolean updateStudentDevice(StudentDevice studentDevice)
+    public boolean updateStudentDevice(Student student)
     {
         ContentValues args = new ContentValues();
-        args.put(COL_STUDENT_NAME, studentDevice.getStudentName());
-        args.put(COL_MAC_ADDRESS, studentDevice.getMacAddress());
-        return db.update(TABLE_DEVICE, args, COL_STUDENT_ID + "=" + studentDevice.getStudentId(), null) > 0;
+        args.put(COL_STUDENT_NAME, student.getStudentName());
+        args.put(COL_MAC_ADDRESS, student.getMacAddress());
+        return db.update(TABLE_DEVICE, args, COL_STUDENT_ID + "=" + student.getStudentId(), null) > 0;
     }
 }

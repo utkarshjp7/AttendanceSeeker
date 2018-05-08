@@ -11,6 +11,10 @@
     <string name="btn_cancel">Cancel</string>
     <string name="btn_take_attendance">Take Attendance</string>
     <string name="btn_all_students">All Students</string>
+    <string name="btn_register_manually">Register Manually</string>
+    <string name="btn_show_nearby_devices">Show Nearby Devices</string>
+    <string name="btn_present_students">Present Students</string>
+    <string name="btn_absent_students">Absent Students</string>
     <string-array name="classes">
         <item>CIS 470</item>
         <item>CIS 475</item>
